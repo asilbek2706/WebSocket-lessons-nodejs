@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WebSocket Live Test Rig</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background: #121212;
+            color: #ffffff;
+        }
+
+        #log {
+            background: #000;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #333
+        }
+
+        .status-on {
+            color: #00ff00
+        }
+
+        .status-off {
+            color: #ff0000
+        }
+    </style>
+</head>
+<body>
+
+    <h1>WebSocket Broadcast Console</h1>
+
+    <p id="status" class="status-off">Connecting...</p>
+
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Send cargo..." required/>
+        <button type="submit">Deploy Message</button>
+    </form>
+
+    <h3>Live Stream Logs:</h3>
+    <pre id="log"></pre>
+
+
+    <script>
+        const statusEl = document.getElementById('status');
+        const log = document.getElementById('log');
+        const inputEl = document.getElementById('message-input');
+
+        // #1. Initiate the Handshake
+        const socket = WebSocket('ws://localhost:8080');
+
+        const appendLog = (label, message) => {
+            const entry = `${new Date().toLocaleTimeString()} ${label}\n`
+            log.textContent = entry + log.textContent;
+        }
+
+        socket.addEventListener('open', () => {
+            statusEl.textContent = 'CONNECTED: ws://localhost:8080'
+            statusEl.classList.toggle('status-on');
+            appendLog('[SYSTEM]', 'Tunnel established.')
+        })
+
+        socket.addEventListener('close', () => {
+            statusEl.textContent = 'DISCONNECTED'
+            statusEl.classList.toggle('status-off');
+
+            appendLog('[SYSTEM]', 'Tunnel Collapsed.')
+        })
+
+        socket.addEventListener('message', e => {
+            appendLog('[RECEIVED]', e.data)
+        })
+    </script>
+</body>
+</html>

@@ -20,6 +20,14 @@ wss.on('connection', (socket, request) => {
         })
     })
 
+    socket.on('error', (err) => {
+        console.error(err);
+    })
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    })
+
 
 })
 
