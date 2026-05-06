@@ -1,14 +1,14 @@
 import express from 'express';
 
 const app = express();
-const port = 8000
+const port = 8000;
 
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
-})
+    res.send('Hello from Express server!');
+});
 
 app.listen(port, () => {
-    console.log(`Server started on port http://localhost:${port}`);
-})
+    console.log(`Server is running at http://localhost:${port}`);
+});
