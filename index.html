@@ -50,28 +50,41 @@
         const inputEl = document.getElementById('message-input');
 
         // #1. Initiate the Handshake
-        const socket = WebSocket('ws://localhost:8080');
+        const socket = new WebSocket('ws://localhost:8080');
 
         const appendLog = (label, message) => {
-            const entry = `${new Date().toLocaleTimeString()} ${label}\n`
+            const entry = `${new Date().toLocaleTimeString()} ${label} ${message}\n`
             log.textContent = entry + log.textContent;
         }
 
         socket.addEventListener('open', () => {
             statusEl.textContent = 'CONNECTED: ws://localhost:8080'
-            statusEl.classList.toggle('status-on');
+            statusEl.className = 'status-on';
             appendLog('[SYSTEM]', 'Tunnel established.')
         })
 
         socket.addEventListener('close', () => {
             statusEl.textContent = 'DISCONNECTED'
-            statusEl.classList.toggle('status-off');
-
+            statusEl.className = 'status-off';
             appendLog('[SYSTEM]', 'Tunnel Collapsed.')
         })
 
         socket.addEventListener('message', e => {
             appendLog('[RECEIVED]', e.data)
+        })
+
+        document.getElementById('message-form').addEventListener('submit', e => {
+            e.preventDefault()
+
+            if(socket.readyState !== WebSocket.OPEN) {
+                appendLog('[ERROR]', 'No active tunnel found.')
+                return
+            }
+
+            const msg = inputEl.value.trim();
+            socket.send(msg);
+            appendLog('[SENT]', msg)
+            inputEl.value = ''
         })
     </script>
 </body>
